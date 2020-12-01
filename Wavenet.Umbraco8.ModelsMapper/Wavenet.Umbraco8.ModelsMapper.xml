@@ -1,0 +1,388 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Wavenet.Umbraco8.ModelsMapper</name>
+    </assembly>
+    <members>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Composing.BaseModelsMappingComposer">
+            <summary>
+            Base class for document type mapping.
+            </summary>
+            <seealso cref="T:Umbraco.Core.Composing.IUserComposer" />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Composing.BaseModelsMappingComposer.Compose(Umbraco.Core.Composing.Composition)">
+            <inheritdoc />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Composing.BaseModelsMappingComposer.Map(Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder)">
+            <summary>
+            Maps document types.
+            </summary>
+            <param name="mapping">The model mapping collection builder.</param>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Composing.ModelsMapperComposer">
+            <summary>
+            Setup ModelsMapper.
+            </summary>
+            <seealso cref="T:Umbraco.Core.Composing.ICoreComposer" />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Composing.ModelsMapperComposer.Compose(Umbraco.Core.Composing.Composition)">
+            <inheritdoc />
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig">
+            <summary>
+            Models mapper has all its configuration hardcoded.
+            This class is only there to activate built-in functionnality required by the library.
+            </summary>
+            <seealso cref="T:Umbraco.ModelsBuilder.Embedded.Configuration.IModelsBuilderConfig" />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.Enable">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.AcceptUnsafeModelsDirectory">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.DebugLevel">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.EnableFactory">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.FlagOutOfDateModels">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.IsDebug">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.ModelsDirectory">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.ModelsMode">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.ModelsNamespace">
+            <inheritdoc />
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Extensions.ReflectionExtensions">
+            <summary>
+            Contains method helper for reflection.
+            </summary>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ReflectionExtensions.GetAllMethods(System.Type)">
+            <summary>
+            Gets all methods the specified <paramref name="type"/> has which incudes methods defined in ancestors.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>All methods the specified <paramref name="type"/> has.</returns>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension">
+            <summary>
+            <see cref="T:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension"/> is an extension helper to simplify the builtin Value extension method.
+            </summary>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.EnumerableValue``2(Umbraco.Core.Models.PublishedContent.IPublishedContent,System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <typeparam name="TItem">The type of the item.</typeparam>
+            <param name="content">The content.</param>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>The value of the content's property identified by the alias.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.EnumerableValue``2(Umbraco.Core.Models.PublishedContent.IPublishedElement,System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <typeparam name="TItem">The type of the item.</typeparam>
+            <param name="element">The element.</param>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>The value of the content's property identified by the alias.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.Value``1(Umbraco.Core.Models.PublishedContent.IPublishedContent,System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <param name="content">The content.</param>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>The value of the content's property identified by the alias.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.Value``1(Umbraco.Core.Models.PublishedContent.IPublishedElement,System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <param name="element">The element.</param>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>The value of the content's property identified by the alias.</returns>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Internal.IModelMapper">
+            <summary>
+            Internal interface used to determine if a class is generated by ModelsMapper.
+            </summary>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2">
+            <summary>
+              <see cref="T:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2" /> allows you to define the mapping for a Model.
+            </summary>
+            <typeparam name="TDocumentType">The type of the document type.</typeparam>
+            <typeparam name="TPublishedElement">The type of the published element.</typeparam>
+        </member>
+        <member name="F:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.modelMap">
+            <summary>
+            The model map.
+            </summary>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.#ctor(Wavenet.Umbraco8.ModelsMapper.ModelMap)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2"/> class.
+            </summary>
+            <param name="modelMap">The model map.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.ForMember``1(System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Func{`1,``0})">
+            <summary>
+            Defines the mapping for the specified <paramref name="member"/>.
+            </summary>
+            <typeparam name="TMember">The type of the member.</typeparam>
+            <param name="member">The member to map.</param>
+            <param name="implementation">The mapping implementation.</param>
+            <returns>The current mapping.</returns>
+            <exception cref="T:System.ArgumentException">Member should be a property expression like: i => i.Property.</exception>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.ForMember``1(System.Linq.Expressions.Expression{System.Func{`0,System.Func{``0}}},System.Func{`1,``0})">
+            <summary>
+            Defines the mapping for the specified <paramref name="member"/>.
+            </summary>
+            <typeparam name="TMember">The type of the member.</typeparam>
+            <param name="member">The member to map.</param>
+            <param name="implementation">The mapping implementation.</param>
+            <returns>The current mapping.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.ForMember``2(System.Linq.Expressions.Expression{System.Func{`0,System.Func{``1,``0}}},System.Func{`1,``1,``0})">
+            <summary>
+            Defines the mapping for the specified <paramref name="member"/>.
+            </summary>
+            <typeparam name="TMember">The type of the member.</typeparam>
+            <typeparam name="TParam">The type of the parameter.</typeparam>
+            <param name="member">The member to map.</param>
+            <param name="implementation">The mapping implementation.</param>
+            <returns>The current mapping.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.ForMember``3(System.Linq.Expressions.Expression{System.Func{`0,System.Func{``1,``2,``0}}},System.Func{`1,``1,``2,``0})">
+            <summary>
+            Defines the mapping for the specified <paramref name="member"/>.
+            </summary>
+            <typeparam name="TMember">The type of the member.</typeparam>
+            <typeparam name="T1">The type of the first parameter.</typeparam>
+            <typeparam name="T2">The type of the second parameter.</typeparam>
+            <param name="member">The member to map.</param>
+            <param name="implementation">The mapping implementation.</param>
+            <returns>The current mapping.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.ForMember``4(System.Linq.Expressions.Expression{System.Func{`0,System.Func{``1,``2,``3,``0}}},System.Func{`1,``1,``2,``3,``0})">
+            <summary>
+            Defines the mapping for the specified <paramref name="member"/>.
+            </summary>
+            <typeparam name="TMember">The type of the member.</typeparam>
+            <typeparam name="T1">The type of the first parameter.</typeparam>
+            <typeparam name="T2">The type of the second parameter.</typeparam>
+            <typeparam name="T3">The type of the thrid parameter.</typeparam>
+            <param name="member">The member to map.</param>
+            <param name="implementation">The mapping implementation.</param>
+            <returns>The current mapping.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingExpression`2.ForMethodCall(System.Linq.Expressions.LambdaExpression,System.Delegate)">
+            <summary>
+            Defines the mapping for the specified <paramref name="member"/>.
+            </summary>
+            <param name="member">The member to map.</param>
+            <param name="implementation">The mapping implementation.</param>
+            <returns>The current mapping.</returns>
+            <exception cref="T:System.ArgumentException">Member should be a method expression like: i => i.Method.</exception>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.ModelMap">
+            <summary>
+            This class map an Umbraco DocumentType to a dot net interface.
+            </summary>
+        </member>
+        <member name="F:Wavenet.Umbraco8.ModelsMapper.ModelMap.forAllModelMaps">
+            <summary>
+            For all model maps.
+            </summary>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.#ctor(System.Type,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Wavenet.Umbraco8.ModelsMapper.ModelMap" /> class.
+            </summary>
+            <param name="type">The type.</param>
+            <param name="isForAll">Determines if this map is for all interface that extends the specified <paramref name="type"/>.</param>
+            <exception cref="T:System.NotSupportedException">The type: \"{type.FullName}\" is not an interface.</exception>
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.ModelMap.Ctor">
+            <summary>
+            Gets the ctor.
+            </summary>
+            <value>
+            The ctor.
+            </value>
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.ModelMap.Implementations">
+            <summary>
+            Gets the implementations.
+            </summary>
+            <value>
+            The implementations.
+            </value>
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.ModelMap.IsForAll">
+            <summary>
+            Gets a value indicating whether this instance is for all interfaces which extends this type.
+            </summary>
+            <value>
+              <c>true</c> if this instance is for all interfaces which extends this type; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.ModelMap.Type">
+            <summary>
+            Gets the type.
+            </summary>
+            <value>
+            The type.
+            </value>
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.ModelMap.GeneratedType">
+            <summary>
+            Gets or sets the type of the generated.
+            </summary>
+            <value>
+            The type of the generated.
+            </value>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.Build(Umbraco.Core.Models.IContentTypeBase,System.Collections.Generic.IDictionary{System.Type,Wavenet.Umbraco8.ModelsMapper.ModelMap})">
+            <summary>
+            Builds the specified content type.
+            </summary>
+            <param name="contentType">Type of the content.</param>
+            <param name="forAllModelMaps">For all model maps.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.GetImplementationFieldName(System.Reflection.MemberInfo)">
+            <summary>
+            Gets the name of the implementation field.
+            </summary>
+            <param name="member">The member.</param>
+            <returns>The name of the implementation field.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.GetValueMethod(System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Gets the value method for .
+            </summary>
+            <param name="iPublishType">Type of the i publish.</param>
+            <param name="propertyInfo">The property information.</param>
+            <returns>
+            The appropriate Value method for the specified <paramref name="propertyInfo" />.
+            </returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.BuildConstructor(System.Reflection.Emit.TypeBuilder)">
+            <summary>
+            Builds the constructor.
+            </summary>
+            <param name="type">The type.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.TryGetImplementation(System.Reflection.MemberInfo,System.Delegate@)">
+            <summary>
+            Tries to get the specified <paramref name="member"/> implementation.
+            </summary>
+            <param name="member">The member.</param>
+            <param name="implementation">The implementation.</param>
+            <returns><c>True</c> if an implementation is found otherwise <c>false</c>.</returns>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollection">
+            <summary>
+            The collection of model mappings.
+            </summary>
+            <seealso cref="T:System.Collections.ObjectModel.ReadOnlyDictionary`2" />
+            <seealso cref="T:Umbraco.Core.Composing.IBuilderCollection`1" />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollection.#ctor(System.Collections.Generic.IDictionary{System.String,Wavenet.Umbraco8.ModelsMapper.ModelMap},Umbraco.Core.Services.IContentTypeService,Umbraco.Core.Services.IMediaTypeService)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollection" /> class.
+            </summary>
+            <param name="list">The list.</param>
+            <param name="contentTypeService">The content type service.</param>
+            <param name="mediaTypeService">The media type service.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollection.System#Collections#Generic#IEnumerable{Wavenet#Umbraco8#ModelsMapper#ModelMap}#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder">
+            <summary>
+            <see cref="T:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollection"/> Builder.
+            </summary>
+            <seealso cref="T:Umbraco.Core.Composing.ICollectionBuilder`2" />
+        </member>
+        <member name="F:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.maps">
+            <summary>
+            The maps.
+            </summary>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.Umbraco#Core#Composing#ICollectionBuilder{Wavenet#Umbraco8#ModelsMapper#ModelMappingCollection,Wavenet#Umbraco8#ModelsMapper#ModelMap}#CreateCollection(Umbraco.Core.Composing.IFactory)">
+            <inheritdoc />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.DefineMap``1(System.String,System.Action{Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,Umbraco.Core.Models.PublishedContent.IPublishedContent}})">
+            <summary>
+            Defines mapping for the specified <paramref name="documentTypeAlias" />.
+            </summary>
+            <typeparam name="TDocumentType">The type of the document type.</typeparam>
+            <param name="documentTypeAlias">The document type alias.</param>
+            <param name="configuration">The configuration.</param>
+            <returns>This builder.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.DefineElementMap``1(System.String,System.Action{Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,Umbraco.Core.Models.PublishedContent.IPublishedElement}})">
+            <summary>
+            Defines mapping for the specified <paramref name="documentTypeAlias" />.
+            </summary>
+            <typeparam name="TDocumentType">The type of the elemnt type.</typeparam>
+            <param name="documentTypeAlias">The document type alias.</param>
+            <param name="configuration">The configuration.</param>
+            <returns>This builder.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.DefineMapForAll``1(System.Action{Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,Umbraco.Core.Models.PublishedContent.IPublishedContent}})">
+            <summary>
+            Defines a base mapping for all document types which extends the specified <typeparamref name="TDocumentType"/>.
+            </summary>
+            <typeparam name="TDocumentType">The type of the document type.</typeparam>
+            <param name="configuration">The configuration.</param>
+            <returns>This builder.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.Umbraco#Core#Composing#ICollectionBuilder#RegisterWith(Umbraco.Core.Composing.IRegister)">
+            <inheritdoc />
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory">
+            <summary>
+            This factory will serve all the mapping defined in the application.
+            </summary>
+            <seealso cref="T:Umbraco.Core.Models.PublishedContent.IPublishedModelFactory" />
+        </member>
+        <member name="F:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.models">
+            <summary>
+            The models.
+            </summary>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.#ctor(Wavenet.Umbraco8.ModelsMapper.ModelMappingCollection)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory"/> class.
+            </summary>
+            <param name="models">The models.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.CreateModel(Umbraco.Core.Models.PublishedContent.IPublishedElement)">
+            <inheritdoc />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.CreateModelList(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.MapModelType(System.Type)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

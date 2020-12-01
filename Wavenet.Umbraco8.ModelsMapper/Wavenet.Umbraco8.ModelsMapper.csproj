@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>Wavenet.Umbraco8.ModelsMapper.xml</DocumentationFile>
+    <Company>Wavenet</Company>
+    <Authors>Olivier Bossaer</Authors>
+    <Description>Allows you to map document, elements &amp; media types to .net interfaces.</Description>
+    <Copyright>Wavenet ©</Copyright>
+    <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/wavenet-be/Wavenet.Umbraco8.Hangfire</PackageProjectUrl>
+    <PackageIconUrl>https://www.wavenet.be/favicon.ico</PackageIconUrl>
+    <PackageIcon>wavenet.png</PackageIcon>
+    <RepositoryUrl>https://github.com/wavenet-be/Wavenet.Umbraco8.Hangfire</RepositoryUrl>
+    <PackageTags>Umbraco8 ModelsMapper</PackageTags>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
+    <Content Include="Content\wavenet.png" Pack="true" PackagePath="./wavenet.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="UmbracoCms.Web" Version="[8.5,9.0)" />
+  </ItemGroup>
+
+  <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Umbraco.ModelsBuilder.Embedded'">
+        <Aliases>ume</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+</Project>
