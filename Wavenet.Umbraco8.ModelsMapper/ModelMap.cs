@@ -118,6 +118,18 @@ namespace Wavenet.Umbraco8.ModelsMapper
         private static string GetImplementationFieldName(MemberInfo member) => $"{member}<implementation>";
 
         /// <summary>
+        /// Gets the property types of the specified <paramref name="documentType"/>.
+        /// </summary>
+        /// <param name="documentType">Type of the document.</param>
+        /// <returns>The property types of the specified <paramref name="documentType"/>.</returns>
+        private static IEnumerable<PropertyType> GetPropertyTypes(IContentTypeBase documentType)
+        {
+            return documentType is IContentTypeComposition composition ?
+                composition.CompositionPropertyTypes :
+                documentType.PropertyTypes;
+        }
+
+        /// <summary>
         /// Gets the value method for .
         /// </summary>
         /// <param name="iPublishType">Type of the i publish.</param>
@@ -206,7 +218,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
 
         private void BuildProperties(TypeBuilder type, IEnumerable<PropertyInfo> propertyInfos, IContentTypeBase documentType)
         {
-            var umbracoProperties = documentType.PropertyTypes.ToDictionary(
+            var umbracoProperties = GetPropertyTypes(documentType).ToDictionary(
                 keySelector: p => p.Alias,
                 comparer: StringComparer.OrdinalIgnoreCase);
             var iPublishType = documentType.IsElement ? typeof(IPublishedElement) : typeof(IPublishedContent);
