@@ -8,13 +8,13 @@ namespace Wavenet.Umbraco8.ModelsMapper.Composing
 
     using Umbraco.Core;
     using Umbraco.Core.Composing;
-    using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
     using Umbraco.Web.Editors;
     using Umbraco.Web.PublishedCache.NuCache;
     using Umbraco.Web.WebApi;
 
     using Wavenet.Umbraco8.ModelsMapper.Configuration;
+    using Wavenet.Umbraco8.ModelsMapper.Helpers;
 
     using Embedded = ume::Umbraco.ModelsBuilder.Embedded;
     using EmbeddedModelsBuilderComposer = ume::Umbraco.ModelsBuilder.Embedded.Compose.ModelsBuilderComposer;
@@ -47,6 +47,7 @@ namespace Wavenet.Umbraco8.ModelsMapper.Composing
 
             composition.RegisterUnique<IModelsBuilderConfig, ModelsMapperConfig>();
             composition.SetPublishedContentModelFactory<PublishedModelFactory>();
+            composition.Register<IViewRenderer, ViewRenderer>(Lifetime.Request);
         }
     }
 }

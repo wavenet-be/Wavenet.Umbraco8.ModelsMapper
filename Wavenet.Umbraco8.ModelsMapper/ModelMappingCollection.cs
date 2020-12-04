@@ -4,13 +4,11 @@
 
 namespace Wavenet.Umbraco8.ModelsMapper
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
 
     using Umbraco.Core.Composing;
-    using Umbraco.Core.Models;
     using Umbraco.Core.Services;
 
     /// <summary>
@@ -29,11 +27,6 @@ namespace Wavenet.Umbraco8.ModelsMapper
         public ModelMappingCollection(IDictionary<string, ModelMap> list, IContentTypeService contentTypeService, IMediaTypeService mediaTypeService)
             : base(list)
         {
-            var forAllModelMaps = list.Values.Where(m => m.IsForAll).ToDictionary(keySelector: m => m.Type);
-            foreach (var map in list.Where(m => !m.Value.IsForAll))
-            {
-                map.Value.Build((IContentTypeBase)contentTypeService.Get(map.Key) ?? mediaTypeService.Get(map.Key), forAllModelMaps);
-            }
         }
 
         /// <inheritdoc />

@@ -16,13 +16,13 @@ namespace Wavenet.Umbraco8.ModelsMapper.Configuration
     public class ModelsMapperConfig : IModelsBuilderConfig
     {
         /// <inheritdoc />
-        public bool Enable => true;
-
-        /// <inheritdoc />
         public bool AcceptUnsafeModelsDirectory => false;
 
         /// <inheritdoc />
         public int DebugLevel => 0;
+
+        /// <inheritdoc />
+        public bool Enable => true;
 
         /// <inheritdoc />
         public bool EnableFactory => false;

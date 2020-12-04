@@ -31,21 +31,6 @@ namespace Wavenet.Umbraco8.ModelsMapper
         /// <summary>
         /// Defines mapping for the specified <paramref name="documentTypeAlias" />.
         /// </summary>
-        /// <typeparam name="TDocumentType">The type of the document type.</typeparam>
-        /// <param name="documentTypeAlias">The document type alias.</param>
-        /// <param name="configuration">The configuration.</param>
-        /// <returns>This builder.</returns>
-        public ModelMappingCollectionBuilder DefineMap<TDocumentType>(string documentTypeAlias, Action<MappingExpression<TDocumentType, IPublishedContent>>? configuration = null)
-        {
-            var map = new ModelMap(typeof(TDocumentType), isForAll: false);
-            this.maps.Add(documentTypeAlias, map);
-            configuration?.Invoke(new MappingExpression<TDocumentType, IPublishedContent>(map));
-            return this;
-        }
-
-        /// <summary>
-        /// Defines mapping for the specified <paramref name="documentTypeAlias" />.
-        /// </summary>
         /// <typeparam name="TDocumentType">The type of the elemnt type.</typeparam>
         /// <param name="documentTypeAlias">The document type alias.</param>
         /// <param name="configuration">The configuration.</param>
@@ -55,6 +40,21 @@ namespace Wavenet.Umbraco8.ModelsMapper
             var map = new ModelMap(typeof(TDocumentType), isForAll: false);
             this.maps.Add(documentTypeAlias, map);
             configuration?.Invoke(new MappingExpression<TDocumentType, IPublishedElement>(map));
+            return this;
+        }
+
+        /// <summary>
+        /// Defines mapping for the specified <paramref name="documentTypeAlias" />.
+        /// </summary>
+        /// <typeparam name="TDocumentType">The type of the document type.</typeparam>
+        /// <param name="documentTypeAlias">The document type alias.</param>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns>This builder.</returns>
+        public ModelMappingCollectionBuilder DefineMap<TDocumentType>(string documentTypeAlias, Action<MappingExpression<TDocumentType, IPublishedContent>>? configuration = null)
+        {
+            var map = new ModelMap(typeof(TDocumentType), isForAll: false);
+            this.maps.Add(documentTypeAlias, map);
+            configuration?.Invoke(new MappingExpression<TDocumentType, IPublishedContent>(map));
             return this;
         }
 

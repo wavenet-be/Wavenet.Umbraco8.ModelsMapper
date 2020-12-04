@@ -6,11 +6,13 @@ namespace Wavenet.Umbraco8.ModelsMapper
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
 
     using Umbraco.Core;
+    using Umbraco.Core.Configuration;
     using Umbraco.Core.Models;
     using Umbraco.Core.Models.PublishedContent;
     using Umbraco.Web;
@@ -19,7 +21,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
     using Wavenet.Umbraco8.ModelsMapper.Internal;
 
     /// <summary>
-    /// This class map an Umbraco DocumentType to a dot net interface.
+    /// This class map an Umbraco DocumentType to a .net interface.
     /// </summary>
     public class ModelMap
     {
@@ -69,6 +71,14 @@ namespace Wavenet.Umbraco8.ModelsMapper
         public bool IsForAll { get; }
 
         /// <summary>
+        /// Gets the missing implementation.
+        /// </summary>
+        /// <value>
+        /// The missing implementations.
+        /// </value>
+        public HashSet<PropertyInfo> MissingImplementations { get; } = new HashSet<PropertyInfo>();
+
+        /// <summary>
         /// Gets the type.
         /// </summary>
         /// <value>
@@ -89,8 +99,14 @@ namespace Wavenet.Umbraco8.ModelsMapper
         /// </summary>
         /// <param name="contentType">Type of the content.</param>
         /// <param name="forAllModelMaps">For all model maps.</param>
-        public void Build(IContentTypeBase contentType, IDictionary<Type, ModelMap> forAllModelMaps)
+        public void Build(IContentTypeComposition contentType, IDictionary<Type, ModelMap> forAllModelMaps)
         {
+            if (this.GeneratedType != null)
+            {
+                this.FixMissingImplementations(contentType);
+                return;
+            }
+
             this.forAllModelMaps = forAllModelMaps;
             var name = new AssemblyName($"ModelsMapper_{this.Type.FullName}");
             var assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
@@ -116,18 +132,6 @@ namespace Wavenet.Umbraco8.ModelsMapper
         /// <param name="member">The member.</param>
         /// <returns>The name of the implementation field.</returns>
         private static string GetImplementationFieldName(MemberInfo member) => $"{member}<implementation>";
-
-        /// <summary>
-        /// Gets the property types of the specified <paramref name="documentType"/>.
-        /// </summary>
-        /// <param name="documentType">Type of the document.</param>
-        /// <returns>The property types of the specified <paramref name="documentType"/>.</returns>
-        private static IEnumerable<PropertyType> GetPropertyTypes(IContentTypeBase documentType)
-        {
-            return documentType is IContentTypeComposition composition ?
-                composition.CompositionPropertyTypes :
-                documentType.PropertyTypes;
-        }
 
         /// <summary>
         /// Gets the value method for .
@@ -165,6 +169,9 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 type: implementation.GetType(),
                 attributes: FieldAttributes.Private | FieldAttributes.Static);
             il.Emit(OpCodes.Ldsfld, implementationField);
+            il.Emit(OpCodes.Dup);
+            var exception = il.DefineLabel();
+            il.Emit(OpCodes.Brfalse_S, exception);
             il.Emit(OpCodes.Ldarg_0);
             for (int i = 1, c = implementationField.FieldType.GenericTypeArguments.Length - 1; i < c; i++)
             {
@@ -173,6 +180,9 @@ namespace Wavenet.Umbraco8.ModelsMapper
 
             il.Emit(OpCodes.Callvirt, implementationField.FieldType.GetMethod("Invoke"));
             il.Emit(OpCodes.Ret);
+            il.MarkLabel(exception);
+            il.Emit(OpCodes.Newobj, typeof(NotImplementedException).GetConstructor(Type.EmptyTypes));
+            il.Emit(OpCodes.Throw);
             if (propertyInfo != null)
             {
                 type.DefineMethodOverride(getter, propertyInfo.GetMethod);
@@ -211,24 +221,25 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 }
                 else if (type.BaseType.GetMethod(methodInfo.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy, null, methodInfo.GetParameters().Select(p => p.ParameterType).ToArray(), null) == null)
                 {
-                    throw new InvalidOperationException($"Method: {methodInfo.Name} is not implemented.");
+                    throw new NotSupportedException($"Method: {methodInfo.Name} is not implemented.");
                 }
             }
         }
 
-        private void BuildProperties(TypeBuilder type, IEnumerable<PropertyInfo> propertyInfos, IContentTypeBase documentType)
+        private void BuildProperties(TypeBuilder type, IEnumerable<PropertyInfo> propertyInfos, IContentTypeComposition documentType)
         {
-            var umbracoProperties = GetPropertyTypes(documentType).ToDictionary(
+            var umbracoProperties = documentType.CompositionPropertyTypes.ToDictionary(
                 keySelector: p => p.Alias,
+                elementSelector: p => p.Alias,
                 comparer: StringComparer.OrdinalIgnoreCase);
             var iPublishType = documentType.IsElement ? typeof(IPublishedElement) : typeof(IPublishedContent);
             var blacklist = new HashSet<Type> { typeof(IPublishedContent), typeof(IPublishedElement) };
 
             foreach (var propertyInfo in propertyInfos.Where(p => !blacklist.Contains(p.DeclaringType)))
             {
-                if (propertyInfo.CanWrite || !propertyInfo.CanRead || propertyInfo.GetIndexParameters().Length > 0)
+                if (propertyInfo.CanWrite || !propertyInfo.CanRead || propertyInfo.GetIndexParameters().Any())
                 {
-                    throw new InvalidOperationException($"Interface {this.Type.FullName} should only have readonly properties.");
+                    throw new NotSupportedException($"Interface {this.Type.FullName} should only have readonly properties.");
                 }
 
                 if (this.TryGetImplementation(propertyInfo, out var implementation))
@@ -239,11 +250,9 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 {
                     var getter = type.DefineMethod($"get_{propertyInfo.Name}", MethodAttributes.Virtual | MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig, propertyInfo.PropertyType, Type.EmptyTypes);
                     var il = getter.GetILGenerator();
-                    var value = GetValueMethod(iPublishType, propertyInfo);
-                    Type fallbackType = typeof(Fallback);
                     il.Emit(OpCodes.Ldarg_0);
-                    il.Emit(OpCodes.Ldstr, umbracoProperty.Alias);
-                    il.Emit(OpCodes.Call, value);
+                    il.Emit(OpCodes.Ldstr, umbracoProperty);
+                    il.Emit(OpCodes.Call, GetValueMethod(iPublishType, propertyInfo));
                     il.Emit(OpCodes.Ret);
                     type.DefineProperty(propertyInfo.Name, PropertyAttributes.None, propertyInfo.PropertyType, Type.EmptyTypes)
                         .SetGetMethod(getter);
@@ -251,16 +260,59 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 }
                 else if (type.BaseType.GetProperty(propertyInfo.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy, null, propertyInfo.PropertyType, Type.EmptyTypes, null) == null)
                 {
-                    throw new InvalidOperationException($"Property not found: {propertyInfo.Name} in document type {documentType.Alias}.");
+                    if (GlobalSettings.DebugMode)
+                    {
+                        // In development, the system goes for the fail fast principle.
+                        throw new NotImplementedException($"Property not found: {propertyInfo.Name} in document type {documentType.Alias}.");
+                    }
+                    else
+                    {
+                        /*
+                         * In production, the system will make a temporay resolution which throws a NotImplementedException
+                         * if the property is called before it's defined in Umbraco .
+                         */
+                        this.MissingImplementations.Add(propertyInfo);
+                        ProxyMethodImplementation(type, propertyInfo, MissingImplementationFactory.GetDefaultImplementation(propertyInfo.PropertyType, iPublishType));
+                    }
                 }
             }
         }
 
-        private TypeBuilder BuildType(ModuleBuilder module, IContentTypeBase contentType)
+        private TypeBuilder BuildType(ModuleBuilder module, IContentTypeComposition contentType)
         {
             var parent = !contentType.IsElement ? typeof(PublishedContentModel) : typeof(PublishedElementModel);
             var interfaces = new[] { this.Type, typeof(IModelMapper) };
             return module.DefineType(this.Type.FullName, TypeAttributes.Public, parent, interfaces);
+        }
+
+        private void FixMissingImplementations(IContentTypeComposition documentType)
+        {
+            if (!this.MissingImplementations.Any() || this.GeneratedType == null)
+            {
+                return;
+            }
+
+            var iPublishType = documentType.IsElement ? typeof(IPublishedElement) : typeof(IPublishedContent);
+            var umbracoProperties = documentType.CompositionPropertyTypes.ToDictionary(
+                keySelector: p => p.Alias,
+                elementSelector: p => p.Alias,
+                comparer: StringComparer.OrdinalIgnoreCase);
+            var toImplement = from missing in this.MissingImplementations
+                              where umbracoProperties.ContainsKey(missing.Name)
+                              select new { Property = missing, Alias = umbracoProperties[missing.Name] };
+            foreach (var implementation in toImplement.ToList())
+            {
+                this.MissingImplementations.Remove(implementation.Property);
+                var name = GetImplementationFieldName(implementation.Property);
+                var getter = new DynamicMethod(name, implementation.Property.PropertyType, new[] { iPublishType });
+                var il = getter.GetILGenerator();
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Ldstr, implementation.Alias);
+                il.Emit(OpCodes.Call, GetValueMethod(iPublishType, implementation.Property));
+                il.Emit(OpCodes.Ret);
+                this.GeneratedType.GetField(name, BindingFlags.Static | BindingFlags.NonPublic)
+                    ?.SetValue(null, getter.CreateDelegate(typeof(Func<,>).MakeGenericType(iPublishType, implementation.Property.PropertyType)));
+            }
         }
 
         /// <summary>
@@ -269,7 +321,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
         /// <param name="member">The member.</param>
         /// <param name="implementation">The implementation.</param>
         /// <returns><c>True</c> if an implementation is found otherwise <c>false</c>.</returns>
-        private bool TryGetImplementation(MemberInfo member, out Delegate implementation)
+        private bool TryGetImplementation(MemberInfo member, [NotNullWhen(true)] out Delegate? implementation)
         {
             if (this.Implementations.TryGetValue(member, out implementation))
             {

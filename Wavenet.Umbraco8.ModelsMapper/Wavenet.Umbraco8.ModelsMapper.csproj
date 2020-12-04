@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <None Remove="stylecop.json" />
+    <None Remove="Wavenet.Umbraco8.ModelsMapper.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,11 +30,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nullable" Version="1.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="UmbracoCms.Web" Version="[8.5,9.0)" />
+    <PackageReference Include="UmbracoCms.Web" Version="[8.7,9.0)" />
   </ItemGroup>
 
   <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
