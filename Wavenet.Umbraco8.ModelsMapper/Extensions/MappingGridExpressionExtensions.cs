@@ -48,6 +48,33 @@ namespace Wavenet.Umbraco8.ModelsMapper
         /// </summary>
         /// <typeparam name="TDocumentType">The type of the document type.</typeparam>
         /// <typeparam name="TPublishedElement">The type of the published element.</typeparam>
+        /// <typeparam name="TMember">The type of the member.</typeparam>
+        /// <param name="mapping">The mapping.</param>
+        /// <param name="member">The member.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns>
+        /// The current mapping.
+        /// </returns>
+        public static MappingExpression<TDocumentType, TPublishedElement> ForGridMember<TDocumentType, TPublishedElement, TMember>(this MappingExpression<TDocumentType, TPublishedElement> mapping, Expression<Func<TDocumentType, TMember>> member, string propertyName)
+            where TPublishedElement : IPublishedElement
+        {
+            if (!MappingHtmlStringExtensions.IsDefined(typeof(TMember)))
+            {
+                throw new NotSupportedException($"{typeof(TMember).Name} is not defined as IHtmlString");
+            }
+
+            return mapping.ForMember(member, c =>
+            {
+                var attempt = ViewRenderer.GetGridHtml(c.Value(propertyName)).TryConvertTo<TMember>();
+                return attempt.Success ? attempt.Result : default!;
+            });
+        }
+
+        /// <summary>
+        /// Defines the mapping for the specified <paramref name="member" />.
+        /// </summary>
+        /// <typeparam name="TDocumentType">The type of the document type.</typeparam>
+        /// <typeparam name="TPublishedElement">The type of the published element.</typeparam>
         /// <param name="mapping">The mapping.</param>
         /// <param name="member">The member.</param>
         /// <param name="propertyName">Name of the property.</param>

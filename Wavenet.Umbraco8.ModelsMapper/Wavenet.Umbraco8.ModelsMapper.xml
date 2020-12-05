@@ -4,6 +4,26 @@
         <name>Wavenet.Umbraco8.ModelsMapper</name>
     </assembly>
     <members>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.ComponentModel.HtmlStringConverter">
+            <summary>
+            HtmlString type converter.
+            </summary>
+            <seealso cref="T:System.ComponentModel.TypeConverter" />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.ComponentModel.HtmlStringConverter.Constructor">
+            <summary>
+            Gets or sets the constructor.
+            </summary>
+            <value>
+            The constructor.
+            </value>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ComponentModel.HtmlStringConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <inheritdoc />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ComponentModel.HtmlStringConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <inheritdoc />
+        </member>
         <member name="T:Wavenet.Umbraco8.ModelsMapper.Composing.BaseModelsMappingComposer">
             <summary>
             Base class for document type mapping.
@@ -35,13 +55,13 @@
             </summary>
             <seealso cref="T:Umbraco.ModelsBuilder.Embedded.Configuration.IModelsBuilderConfig" />
         </member>
-        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.Enable">
-            <inheritdoc />
-        </member>
         <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.AcceptUnsafeModelsDirectory">
             <inheritdoc />
         </member>
         <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.DebugLevel">
+            <inheritdoc />
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.Enable">
             <inheritdoc />
         </member>
         <member name="P:Wavenet.Umbraco8.ModelsMapper.Configuration.ModelsMapperConfig.EnableFactory">
@@ -88,6 +108,20 @@
             The current mapping.
             </returns>
         </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingGridExpressionExtensions.ForGridMember``3(Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,``1},System.Linq.Expressions.Expression{System.Func{``0,``2}},System.String)">
+            <summary>
+            Defines the mapping for the specified <paramref name="member" />.
+            </summary>
+            <typeparam name="TDocumentType">The type of the document type.</typeparam>
+            <typeparam name="TPublishedElement">The type of the published element.</typeparam>
+            <typeparam name="TMember">The type of the member.</typeparam>
+            <param name="mapping">The mapping.</param>
+            <param name="member">The member.</param>
+            <param name="propertyName">Name of the property.</param>
+            <returns>
+            The current mapping.
+            </returns>
+        </member>
         <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingGridExpressionExtensions.ForGridMember``2(Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,``1},System.Linq.Expressions.Expression{System.Func{``0,System.Web.IHtmlString}},System.String)">
             <summary>
             Defines the mapping for the specified <paramref name="member" />.
@@ -99,6 +133,42 @@
             <param name="propertyName">Name of the property.</param>
             <returns>
             The current mapping.
+            </returns>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.MappingHtmlStringExtensions">
+            <summary>
+            Extension class for <see cref="T:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder"/> for HTML String interfaces.
+            </summary>
+        </member>
+        <member name="F:Wavenet.Umbraco8.ModelsMapper.MappingHtmlStringExtensions.DefinedTypes">
+            <summary>
+            The defined types.
+            </summary>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingHtmlStringExtensions.DefineHtmlString``1(Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder)">
+            <summary>
+            Defines an HTML string interface.
+            </summary>
+            <typeparam name="THtmlString">The type of the HTML string.</typeparam>
+            <param name="mapping">The mapping.</param>
+            <returns>
+            This builder.
+            </returns>
+            <exception cref="T:System.ArgumentException">
+            THtmlString should be an interface.
+            or
+            THtmlString may only define one method: \"string ToHtmlString()\".
+            or
+            THtmlString may only define one property: \"string Html { get; }\".
+            </exception>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.MappingHtmlStringExtensions.IsDefined(System.Type)">
+            <summary>
+            Determines whether the specified type is defined.
+            </summary>
+            <param name="type">The type.</param>
+            <returns>
+              <c>true</c> if the specified type is defined; otherwise, <c>false</c>.
             </returns>
         </member>
         <member name="T:Wavenet.Umbraco8.ModelsMapper.MappingMethodExpressionExtensions">
@@ -295,6 +365,32 @@
             Releases unmanaged and - optionally - managed resources.
             </summary>
             <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Internal.BaseHtmlString">
+            <summary>
+            Base class for HTML strings.
+            </summary>
+            <seealso cref="T:System.Web.IHtmlString" />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Internal.BaseHtmlString.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Wavenet.Umbraco8.ModelsMapper.Internal.BaseHtmlString"/> class.
+            </summary>
+            <param name="html">The HTML.</param>
+        </member>
+        <member name="P:Wavenet.Umbraco8.ModelsMapper.Internal.BaseHtmlString.Html">
+            <summary>
+            Gets the HTML.
+            </summary>
+            <value>
+            The HTML.
+            </value>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Internal.BaseHtmlString.ToHtmlString">
+            <inheritdoc />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Internal.BaseHtmlString.ToString">
+            <inheritdoc />
         </member>
         <member name="T:Wavenet.Umbraco8.ModelsMapper.Internal.IModelMapper">
             <summary>
@@ -496,20 +592,20 @@
         <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.Umbraco#Core#Composing#ICollectionBuilder{Wavenet#Umbraco8#ModelsMapper#ModelMappingCollection,Wavenet#Umbraco8#ModelsMapper#ModelMap}#CreateCollection(Umbraco.Core.Composing.IFactory)">
             <inheritdoc />
         </member>
-        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.DefineMap``1(System.String,System.Action{Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,Umbraco.Core.Models.PublishedContent.IPublishedContent}})">
-            <summary>
-            Defines mapping for the specified <paramref name="documentTypeAlias" />.
-            </summary>
-            <typeparam name="TDocumentType">The type of the document type.</typeparam>
-            <param name="documentTypeAlias">The document type alias.</param>
-            <param name="configuration">The configuration.</param>
-            <returns>This builder.</returns>
-        </member>
         <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.DefineElementMap``1(System.String,System.Action{Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,Umbraco.Core.Models.PublishedContent.IPublishedElement}})">
             <summary>
             Defines mapping for the specified <paramref name="documentTypeAlias" />.
             </summary>
             <typeparam name="TDocumentType">The type of the elemnt type.</typeparam>
+            <param name="documentTypeAlias">The document type alias.</param>
+            <param name="configuration">The configuration.</param>
+            <returns>This builder.</returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.DefineMap``1(System.String,System.Action{Wavenet.Umbraco8.ModelsMapper.MappingExpression{``0,Umbraco.Core.Models.PublishedContent.IPublishedContent}})">
+            <summary>
+            Defines mapping for the specified <paramref name="documentTypeAlias" />.
+            </summary>
+            <typeparam name="TDocumentType">The type of the document type.</typeparam>
             <param name="documentTypeAlias">The document type alias.</param>
             <param name="configuration">The configuration.</param>
             <returns>This builder.</returns>
@@ -532,11 +628,6 @@
             <seealso cref="T:Umbraco.Core.Models.PublishedContent.ILivePublishedModelFactory" />
             <seealso cref="T:Umbraco.Core.Models.PublishedContent.IPublishedModelFactory" />
         </member>
-        <member name="F:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.models">
-            <summary>
-            The models.
-            </summary>
-        </member>
         <member name="F:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.contentTypeService">
             <summary>
             The content type service.
@@ -545,6 +636,11 @@
         <member name="F:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.mediaTypeService">
             <summary>
             The media service.
+            </summary>
+        </member>
+        <member name="F:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.models">
+            <summary>
+            The models.
             </summary>
         </member>
         <member name="M:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory.#ctor(Wavenet.Umbraco8.ModelsMapper.ModelMappingCollection,Umbraco.Core.Services.IContentTypeService,Umbraco.Core.Services.IMediaTypeService)">

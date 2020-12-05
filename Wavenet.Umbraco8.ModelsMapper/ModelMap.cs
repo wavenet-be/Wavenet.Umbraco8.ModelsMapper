@@ -282,7 +282,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
         {
             var parent = !contentType.IsElement ? typeof(PublishedContentModel) : typeof(PublishedElementModel);
             var interfaces = new[] { this.Type, typeof(IModelMapper) };
-            return module.DefineType(this.Type.FullName, TypeAttributes.Public, parent, interfaces);
+            return module.DefineType("ModelsMapper_" + this.Type.FullName, TypeAttributes.Public, parent, interfaces);
         }
 
         private void FixMissingImplementations(IContentTypeComposition documentType)
