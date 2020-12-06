@@ -44,6 +44,11 @@ namespace Wavenet.Umbraco8.ModelsMapper.Models
             where TResult : IEnumerable<TItem>
         {
             var result = WebPublishedContentExtensions.Value(this, propertyAlias);
+            if (result == null)
+            {
+                result = Enumerable.Empty<TItem>();
+            }
+
             var attempt = result.TryConvertTo<TResult>();
             if (!attempt.Success && result is IEnumerable enumerable)
             {
