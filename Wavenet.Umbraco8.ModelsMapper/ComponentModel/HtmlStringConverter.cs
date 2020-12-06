@@ -27,7 +27,7 @@ namespace Wavenet.Umbraco8.ModelsMapper.ComponentModel
 
         /// <inheritdoc />
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-            => sourceType == typeof(string) || typeof(IHtmlString).IsAssignableFrom(sourceType);
+            => this.Constructor != null && (sourceType == typeof(string) || typeof(IHtmlString).IsAssignableFrom(sourceType));
 
         /// <inheritdoc />
         public override object? ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)

@@ -264,49 +264,6 @@
             <param name="type">The type.</param>
             <returns>All methods the specified <paramref name="type"/> has.</returns>
         </member>
-        <member name="T:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension">
-            <summary>
-            <see cref="T:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension"/> is an extension helper to simplify the builtin Value extension method.
-            </summary>
-        </member>
-        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.EnumerableValue``2(Umbraco.Core.Models.PublishedContent.IPublishedContent,System.String)">
-            <summary>
-            Gets the value of a content's property identified by its alias.
-            </summary>
-            <typeparam name="TResult">The type of the result.</typeparam>
-            <typeparam name="TItem">The type of the item.</typeparam>
-            <param name="content">The content.</param>
-            <param name="propertyAlias">The property alias.</param>
-            <returns>The value of the content's property identified by the alias.</returns>
-        </member>
-        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.EnumerableValue``2(Umbraco.Core.Models.PublishedContent.IPublishedElement,System.String)">
-            <summary>
-            Gets the value of a content's property identified by its alias.
-            </summary>
-            <typeparam name="TResult">The type of the result.</typeparam>
-            <typeparam name="TItem">The type of the item.</typeparam>
-            <param name="element">The element.</param>
-            <param name="propertyAlias">The property alias.</param>
-            <returns>The value of the content's property identified by the alias.</returns>
-        </member>
-        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.Value``1(Umbraco.Core.Models.PublishedContent.IPublishedContent,System.String)">
-            <summary>
-            Gets the value of a content's property identified by its alias.
-            </summary>
-            <typeparam name="TResult">The type of the result.</typeparam>
-            <param name="content">The content.</param>
-            <param name="propertyAlias">The property alias.</param>
-            <returns>The value of the content's property identified by the alias.</returns>
-        </member>
-        <member name="M:Wavenet.Umbraco8.ModelsMapper.Extensions.ValueExtension.Value``1(Umbraco.Core.Models.PublishedContent.IPublishedElement,System.String)">
-            <summary>
-            Gets the value of a content's property identified by its alias.
-            </summary>
-            <typeparam name="TResult">The type of the result.</typeparam>
-            <param name="element">The element.</param>
-            <param name="propertyAlias">The property alias.</param>
-            <returns>The value of the content's property identified by the alias.</returns>
-        </member>
         <member name="T:Wavenet.Umbraco8.ModelsMapper.Helpers.IViewRenderer">
             <summary>
             <see cref="T:Wavenet.Umbraco8.ModelsMapper.Helpers.IViewRenderer"/> allows you to render an Umbraco grid without the view context.
@@ -461,6 +418,11 @@
             This class map an Umbraco DocumentType to a .net interface.
             </summary>
         </member>
+        <member name="F:Wavenet.Umbraco8.ModelsMapper.ModelMap.converters">
+            <summary>
+            The converters.
+            </summary>
+        </member>
         <member name="F:Wavenet.Umbraco8.ModelsMapper.ModelMap.forAllModelMaps">
             <summary>
             For all model maps.
@@ -529,6 +491,13 @@
             <param name="contentType">Type of the content.</param>
             <param name="forAllModelMaps">For all model maps.</param>
         </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.GetConverterFieldName(System.Reflection.PropertyInfo)">
+            <summary>
+            Gets the name of the converter field.
+            </summary>
+            <param name="propertyInfo">The property information.</param>
+            <returns>The name of the converter field.</returns>
+        </member>
         <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.GetImplementationFieldName(System.Reflection.MemberInfo)">
             <summary>
             Gets the name of the implementation field.
@@ -536,21 +505,27 @@
             <param name="member">The member.</param>
             <returns>The name of the implementation field.</returns>
         </member>
-        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.GetValueMethod(System.Type,System.Reflection.PropertyInfo)">
-            <summary>
-            Gets the value method for .
-            </summary>
-            <param name="iPublishType">Type of the i publish.</param>
-            <param name="propertyInfo">The property information.</param>
-            <returns>
-            The appropriate Value method for the specified <paramref name="propertyInfo" />.
-            </returns>
-        </member>
         <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.BuildConstructor(System.Reflection.Emit.TypeBuilder)">
             <summary>
             Builds the constructor.
             </summary>
             <param name="type">The type.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.CallValueMethod(System.Type,System.Reflection.Emit.ILGenerator,System.Reflection.PropertyInfo)">
+            <summary>
+            Calls the value method.
+            </summary>
+            <param name="type">The type.</param>
+            <param name="il">The IL Generator.</param>
+            <param name="propertyInfo">The property information.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.EnsuresConverterField(System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Ensureses the converter field if specified <paramref name="propertyInfo"/> has a <see cref="T:System.ComponentModel.TypeConverterAttribute"/>.
+            </summary>
+            <param name="type">The type.</param>
+            <param name="propertyInfo">The property information.</param>
+            <returns>The <see cref="T:System.Reflection.FieldInfo"/> if specified <paramref name="propertyInfo"/> has a <see cref="T:System.ComponentModel.TypeConverterAttribute"/>; Otherwise <c>null</c>.</returns>
         </member>
         <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMap.TryGetImplementation(System.Reflection.MemberInfo,System.Delegate@)">
             <summary>
@@ -620,6 +595,94 @@
         </member>
         <member name="M:Wavenet.Umbraco8.ModelsMapper.ModelMappingCollectionBuilder.Umbraco#Core#Composing#ICollectionBuilder#RegisterWith(Umbraco.Core.Composing.IRegister)">
             <inheritdoc />
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Models.PublishedContentModelMapper">
+            <summary>
+            Base class for strongly-typed mapping of a published content.
+            </summary>
+            <seealso cref="T:Umbraco.Core.Models.PublishedContent.PublishedContentWrapped" />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedContentModelMapper.#ctor(Umbraco.Core.Models.PublishedContent.IPublishedContent)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Wavenet.Umbraco8.ModelsMapper.Models.PublishedContentModelMapper" /> class.
+            </summary>
+            <param name="content">The original content.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedContentModelMapper.EnumerableValue``2(System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <typeparam name="TItem">The type of the item.</typeparam>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>
+            The value of the content's property identified by the alias.
+            </returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedContentModelMapper.Value``1(System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>
+            The value of the content's property identified by the alias.
+            </returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedContentModelMapper.Value``1(System.String,System.ComponentModel.TypeConverter)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <param name="propertyAlias">The property alias.</param>
+            <param name="converter">The converter.</param>
+            <returns>
+            The value of the content's property identified by the alias.
+            </returns>
+        </member>
+        <member name="T:Wavenet.Umbraco8.ModelsMapper.Models.PublishedElementModelMapper">
+            <summary>
+            Base class for strongly-typed mapping of a published content.
+            </summary>
+            <seealso cref="T:Umbraco.Core.Models.PublishedContent.PublishedContentWrapped" />
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedElementModelMapper.#ctor(Umbraco.Core.Models.PublishedContent.IPublishedElement)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Wavenet.Umbraco8.ModelsMapper.Models.PublishedElementModelMapper"/> class.
+            </summary>
+            <param name="content">The content to wrap.</param>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedElementModelMapper.EnumerableValue``2(System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <typeparam name="TItem">The type of the item.</typeparam>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>
+            The value of the content's property identified by the alias.
+            </returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedElementModelMapper.Value``1(System.String)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <param name="propertyAlias">The property alias.</param>
+            <returns>
+            The value of the content's property identified by the alias.
+            </returns>
+        </member>
+        <member name="M:Wavenet.Umbraco8.ModelsMapper.Models.PublishedElementModelMapper.Value``1(System.String,System.ComponentModel.TypeConverter)">
+            <summary>
+            Gets the value of a content's property identified by its alias.
+            </summary>
+            <typeparam name="TResult">The type of the result.</typeparam>
+            <param name="propertyAlias">The property alias.</param>
+            <param name="converter">The converter.</param>
+            <returns>
+            The value of the content's property identified by the alias.
+            </returns>
         </member>
         <member name="T:Wavenet.Umbraco8.ModelsMapper.PublishedModelFactory">
             <summary>

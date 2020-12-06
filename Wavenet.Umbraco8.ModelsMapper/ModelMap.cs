@@ -6,6 +6,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Reflection;
@@ -19,12 +20,18 @@ namespace Wavenet.Umbraco8.ModelsMapper
 
     using Wavenet.Umbraco8.ModelsMapper.Extensions;
     using Wavenet.Umbraco8.ModelsMapper.Internal;
+    using Wavenet.Umbraco8.ModelsMapper.Models;
 
     /// <summary>
     /// This class map an Umbraco DocumentType to a .net interface.
     /// </summary>
     public class ModelMap
     {
+        /// <summary>
+        /// The converters.
+        /// </summary>
+        private readonly IDictionary<PropertyInfo, FieldInfo> converters = new Dictionary<PropertyInfo, FieldInfo>();
+
         /// <summary>
         /// For all model maps.
         /// </summary>
@@ -123,8 +130,24 @@ namespace Wavenet.Umbraco8.ModelsMapper
                     ?.SetValue(null, implementation.Value);
             }
 
+            foreach (var converter in this.converters.ToList())
+            {
+                FieldInfo field = proxy.GetField(GetConverterFieldName(converter.Key), BindingFlags.Static | BindingFlags.NonPublic);
+                this.converters[converter.Key] = field;
+                field.SetValue(
+                    obj: null,
+                    value: TypeDescriptor.GetProperties(converter.Key.DeclaringType).Find(converter.Key.Name, ignoreCase: false).Converter);
+            }
+
             this.Ctor = ReflectionUtilities.EmitConstructor<Func<IPublishedElement, IPublishedElement>>(declaring: proxy);
         }
+
+        /// <summary>
+        /// Gets the name of the converter field.
+        /// </summary>
+        /// <param name="propertyInfo">The property information.</param>
+        /// <returns>The name of the converter field.</returns>
+        private static string GetConverterFieldName(PropertyInfo propertyInfo) => $"{propertyInfo}<converter>";
 
         /// <summary>
         /// Gets the name of the implementation field.
@@ -132,26 +155,6 @@ namespace Wavenet.Umbraco8.ModelsMapper
         /// <param name="member">The member.</param>
         /// <returns>The name of the implementation field.</returns>
         private static string GetImplementationFieldName(MemberInfo member) => $"{member}<implementation>";
-
-        /// <summary>
-        /// Gets the value method for .
-        /// </summary>
-        /// <param name="iPublishType">Type of the i publish.</param>
-        /// <param name="propertyInfo">The property information.</param>
-        /// <returns>
-        /// The appropriate Value method for the specified <paramref name="propertyInfo" />.
-        /// </returns>
-        private static MethodInfo GetValueMethod(Type iPublishType, PropertyInfo propertyInfo)
-        {
-            if (propertyInfo.PropertyType.TryGetGenericArguments(typeof(IEnumerable<>), out var genericArgs) && (genericArgs[0].IsClass || genericArgs[0].IsInterface))
-            {
-                return typeof(ValueExtension).GetMethod("EnumerableValue", new Type[] { iPublishType, typeof(string) }).MakeGenericMethod(propertyInfo.PropertyType, genericArgs[0]);
-            }
-            else
-            {
-                return typeof(ValueExtension).GetMethod("Value", new Type[] { iPublishType, typeof(string) }).MakeGenericMethod(propertyInfo.PropertyType);
-            }
-        }
 
         private static void ProxyMethodImplementation(TypeBuilder type, MemberInfo memberInfo, Delegate implementation)
         {
@@ -235,6 +238,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
             var iPublishType = documentType.IsElement ? typeof(IPublishedElement) : typeof(IPublishedContent);
             var blacklist = new HashSet<Type> { typeof(IPublishedContent), typeof(IPublishedElement) };
 
+            var properties = TypeDescriptor.GetProperties(this.Type);
             foreach (var propertyInfo in propertyInfos.Where(p => !blacklist.Contains(p.DeclaringType)))
             {
                 if (propertyInfo.CanWrite || !propertyInfo.CanRead || propertyInfo.GetIndexParameters().Any())
@@ -252,7 +256,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
                     var il = getter.GetILGenerator();
                     il.Emit(OpCodes.Ldarg_0);
                     il.Emit(OpCodes.Ldstr, umbracoProperty);
-                    il.Emit(OpCodes.Call, GetValueMethod(iPublishType, propertyInfo));
+                    this.CallValueMethod(type, il, propertyInfo);
                     il.Emit(OpCodes.Ret);
                     type.DefineProperty(propertyInfo.Name, PropertyAttributes.None, propertyInfo.PropertyType, Type.EmptyTypes)
                         .SetGetMethod(getter);
@@ -272,6 +276,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
                          * if the property is called before it's defined in Umbraco .
                          */
                         this.MissingImplementations.Add(propertyInfo);
+                        this.EnsuresConverterField(type, propertyInfo);
                         ProxyMethodImplementation(type, propertyInfo, MissingImplementationFactory.GetDefaultImplementation(propertyInfo.PropertyType, iPublishType));
                     }
                 }
@@ -280,9 +285,73 @@ namespace Wavenet.Umbraco8.ModelsMapper
 
         private TypeBuilder BuildType(ModuleBuilder module, IContentTypeComposition contentType)
         {
-            var parent = !contentType.IsElement ? typeof(PublishedContentModel) : typeof(PublishedElementModel);
+            var parent = !contentType.IsElement ? typeof(PublishedContentModelMapper) : typeof(PublishedElementModelMapper);
             var interfaces = new[] { this.Type, typeof(IModelMapper) };
             return module.DefineType("ModelsMapper_" + this.Type.FullName, TypeAttributes.Public, parent, interfaces);
+        }
+
+        /// <summary>
+        /// Calls the value method.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="il">The IL Generator.</param>
+        /// <param name="propertyInfo">The property information.</param>
+        private void CallValueMethod(Type type, ILGenerator il, PropertyInfo propertyInfo)
+        {
+            var converter = this.EnsuresConverterField(type, propertyInfo);
+            if (converter != null)
+            {
+                il.Emit(OpCodes.Ldsfld, converter);
+                il.Emit(
+                    OpCodes.Call,
+                    type.BaseType.GetMethod(
+                        name: "Value",
+                        bindingAttr: BindingFlags.Instance | BindingFlags.NonPublic,
+                        types: new Type[] { typeof(string), typeof(TypeConverter) },
+                        binder: null,
+                        modifiers: null).MakeGenericMethod(propertyInfo.PropertyType));
+            }
+            else if (propertyInfo.PropertyType.TryGetGenericArguments(typeof(IEnumerable<>), out var genericArgs) && (genericArgs[0].IsClass || genericArgs[0].IsInterface))
+            {
+                il.Emit(
+                    OpCodes.Call,
+                    type.BaseType.GetMethod(
+                        name: "EnumerableValue",
+                        bindingAttr: BindingFlags.Instance | BindingFlags.NonPublic,
+                        types: new Type[] { typeof(string) },
+                        binder: null,
+                        modifiers: null).MakeGenericMethod(propertyInfo.PropertyType, genericArgs[0]));
+            }
+            else
+            {
+                il.Emit(
+                    OpCodes.Call,
+                    type.BaseType.GetMethod(
+                        name: "Value",
+                        bindingAttr: BindingFlags.Instance | BindingFlags.NonPublic,
+                        types: new Type[] { typeof(string) },
+                        binder: null,
+                        modifiers: null).MakeGenericMethod(propertyInfo.PropertyType));
+            }
+        }
+
+        /// <summary>
+        /// Ensureses the converter field if specified <paramref name="propertyInfo"/> has a <see cref="TypeConverterAttribute"/>.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="propertyInfo">The property information.</param>
+        /// <returns>The <see cref="FieldInfo"/> if specified <paramref name="propertyInfo"/> has a <see cref="TypeConverterAttribute"/>; Otherwise <c>null</c>.</returns>
+        private FieldInfo? EnsuresConverterField(Type type, PropertyInfo propertyInfo)
+        {
+            if (!this.converters.TryGetValue(propertyInfo, out var field) && type is TypeBuilder builder && propertyInfo.GetCustomAttribute<TypeConverterAttribute>() != null)
+            {
+                this.converters[propertyInfo] = field = builder.DefineField(
+                            fieldName: GetConverterFieldName(propertyInfo),
+                            type: typeof(TypeConverter),
+                            attributes: FieldAttributes.Private | FieldAttributes.Static);
+            }
+
+            return field;
         }
 
         private void FixMissingImplementations(IContentTypeComposition documentType)
@@ -297,21 +366,23 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 keySelector: p => p.Alias,
                 elementSelector: p => p.Alias,
                 comparer: StringComparer.OrdinalIgnoreCase);
-            var toImplement = from missing in this.MissingImplementations
-                              where umbracoProperties.ContainsKey(missing.Name)
-                              select new { Property = missing, Alias = umbracoProperties[missing.Name] };
-            foreach (var implementation in toImplement.ToList())
+            foreach (var property in this.MissingImplementations.ToList())
             {
-                this.MissingImplementations.Remove(implementation.Property);
-                var name = GetImplementationFieldName(implementation.Property);
-                var getter = new DynamicMethod(name, implementation.Property.PropertyType, new[] { iPublishType });
+                if (!umbracoProperties.TryGetValue(property.Name, out var alias))
+                {
+                    continue;
+                }
+
+                this.MissingImplementations.Remove(property);
+                var name = GetImplementationFieldName(property);
+                var getter = new DynamicMethod(name, property.PropertyType, new[] { iPublishType }, this.GeneratedType);
                 var il = getter.GetILGenerator();
                 il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Ldstr, implementation.Alias);
-                il.Emit(OpCodes.Call, GetValueMethod(iPublishType, implementation.Property));
+                il.Emit(OpCodes.Ldstr, alias);
+                this.CallValueMethod(this.GeneratedType, il, property);
                 il.Emit(OpCodes.Ret);
                 this.GeneratedType.GetField(name, BindingFlags.Static | BindingFlags.NonPublic)
-                    ?.SetValue(null, getter.CreateDelegate(typeof(Func<,>).MakeGenericType(iPublishType, implementation.Property.PropertyType)));
+                    ?.SetValue(null, getter.CreateDelegate(typeof(Func<,>).MakeGenericType(iPublishType, property.PropertyType)));
             }
         }
 
