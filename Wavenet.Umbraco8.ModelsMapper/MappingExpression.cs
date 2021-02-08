@@ -49,6 +49,11 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 throw new ArgumentException("Member should be a property expression like: i => i.Property");
             }
 
+            if (this.ModelMap.IsForAll && this.ModelMap.Type != memberExpression.Member.DeclaringType)
+            {
+                throw new ArgumentException($"{memberExpression.Member.Name} should be part of {this.ModelMap.Type.Name} (in for all mode).");
+            }
+
             this.ModelMap.Implementations.Add(memberExpression.Member, implementation);
             return this;
         }

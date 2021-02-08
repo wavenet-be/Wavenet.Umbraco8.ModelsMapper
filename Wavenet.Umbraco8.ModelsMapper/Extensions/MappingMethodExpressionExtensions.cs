@@ -108,6 +108,11 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 throw new ArgumentException("Member should be a method expression like: i => i.Method");
             }
 
+            if (mapping.ModelMap.IsForAll && mapping.ModelMap.Type != methodInfo.DeclaringType)
+            {
+                throw new ArgumentException($"{methodInfo.Name} should be part of {mapping.ModelMap.Type.Name} (in for all mode).");
+            }
+
             mapping.ModelMap.Implementations.Add(methodInfo, implementation);
             return mapping;
         }

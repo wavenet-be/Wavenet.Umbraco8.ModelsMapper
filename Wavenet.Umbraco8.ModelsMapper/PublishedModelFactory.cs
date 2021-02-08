@@ -95,7 +95,7 @@ namespace Wavenet.Umbraco8.ModelsMapper
             var forAllMaps = new Lazy<IDictionary<Type, ModelMap>>(() => this.models.Values.Where(m => m.IsForAll).ToDictionary(keySelector: m => m.Type));
             foreach (var map in this.models)
             {
-                if (map.Value.MissingImplementations.Any())
+                if (map.Value.HasMissingImplementation)
                 {
                     map.Value.Build((IContentTypeComposition)this.contentTypeService.Get(map.Key) ?? this.mediaTypeService.Get(map.Key), forAllMaps.Value);
                 }

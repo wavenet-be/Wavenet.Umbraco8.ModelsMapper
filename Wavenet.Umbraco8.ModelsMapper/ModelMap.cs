@@ -62,6 +62,14 @@ namespace Wavenet.Umbraco8.ModelsMapper
         public Func<IPublishedElement, IPublishedElement>? Ctor { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether this instance has missing implementation.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance has missing implementation; otherwise, <c>false</c>.
+        /// </value>
+        public bool HasMissingImplementation => this.MissingImplementations.Any() || this.GeneratedType == null || this.Ctor == null;
+
+        /// <summary>
         /// Gets the implementations.
         /// </summary>
         /// <value>
@@ -106,8 +114,13 @@ namespace Wavenet.Umbraco8.ModelsMapper
         /// </summary>
         /// <param name="contentType">Type of the content.</param>
         /// <param name="forAllModelMaps">For all model maps.</param>
-        public void Build(IContentTypeComposition contentType, IDictionary<Type, ModelMap> forAllModelMaps)
+        public void Build(IContentTypeComposition? contentType, IDictionary<Type, ModelMap> forAllModelMaps)
         {
+            if (contentType == null)
+            {
+                return;
+            }
+
             if (this.GeneratedType != null)
             {
                 this.FixMissingImplementations(contentType);
