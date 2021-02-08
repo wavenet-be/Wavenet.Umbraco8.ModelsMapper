@@ -277,21 +277,9 @@ namespace Wavenet.Umbraco8.ModelsMapper
                 }
                 else if (type.BaseType.GetProperty(propertyInfo.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy, null, propertyInfo.PropertyType, Type.EmptyTypes, null) == null)
                 {
-                    if (GlobalSettings.DebugMode)
-                    {
-                        // In development, the system goes for the fail fast principle.
-                        throw new NotImplementedException($"Property not found: {propertyInfo.Name} in document type {documentType.Alias}.");
-                    }
-                    else
-                    {
-                        /*
-                         * In production, the system will make a temporay resolution which throws a NotImplementedException
-                         * if the property is called before it's defined in Umbraco .
-                         */
-                        this.MissingImplementations.Add(propertyInfo);
-                        this.EnsuresConverterField(type, propertyInfo);
-                        ProxyMethodImplementation(type, propertyInfo, MissingImplementationFactory.GetDefaultImplementation(propertyInfo.PropertyType, iPublishType));
-                    }
+                    this.MissingImplementations.Add(propertyInfo);
+                    this.EnsuresConverterField(type, propertyInfo);
+                    ProxyMethodImplementation(type, propertyInfo, MissingImplementationFactory.GetDefaultImplementation(propertyInfo.PropertyType, iPublishType));
                 }
             }
         }
